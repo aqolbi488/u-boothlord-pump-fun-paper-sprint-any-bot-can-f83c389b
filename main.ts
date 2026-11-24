@@ -13,16 +13,18 @@
 //   - A mint becomes a candidate on the batch carrying its CreateEvent. I note
 //     its creation price (virtual quote reserves over virtual token reserves)
 //     and its creation slot, and watch it.
-//   - I buy only when early trading confirms momentum: at least 3 trades and
-//     the price up at least 8% from creation. The buy is one small fixed
-//     stake (0.1 SOL, or the per-mint size cap when that is smaller), never
-//     more than one buy per mint, never more than 5 open positions, and only
-//     when free cash covers the stake plus transaction fees. Buys on one mint
-//     in one reply share one size cap, so a single whole order is sent.
+//   - I buy the dip (mean reversion): only when the price has pulled back
+//     15-30% from creation, with at least 5 trades behind it so the price is
+//     real. The buy is one small fixed stake (0.1 SOL, or the per-mint size
+//     cap when that is smaller), never more than one buy per mint, never more
+//     than 5 open positions, and only when free cash covers the stake plus
+//     transaction fees. Buys on one mint in one reply share one size cap, so
+//     a single whole order is sent. Chasing momentum and buying every new
+//     mint both lost much more on the dev window; dips bounced best.
 //   - Every filled buy records its entry price (SOL spent over tokens
 //     received, from the fill itself) and its decided slot. On each later
 //     batch I re-price each holding from its curve's latest reserves and sell
-//     the whole position when any exit fires: +35% take-profit, -28%
+//     the whole position when any exit fires: +20% take-profit, -12%
 //     stop-loss, or 1200 slots held (a time exit, about eight minutes of
 //     slots). The harness closes completed curves itself.
 //   - Determinism is hard: no clock, no environment, no Math.random. Every
@@ -45,8 +47,8 @@ const SELL_SLIPPAGE_BPS = 2000;
 // ---- entry / exit triggers --------------------------------------------------
 
 const MIN_TRADES_BEFORE_BUY = 5;
-const MOMENTUM_BPS = 0; // unused in dip mode: see the dip check below
-                       // (strong momentum was best so far at -2.78 SOL; testing reversion)
+                       // (momentum chase and buy-everything both lost more on dev;
+//                        dip-buying bounced best: -0.88 SOL, 8.9% drawdown)
 const CANDIDATE_MAX_AGE_SLOTS = 900; // drop a mint that never confirms
 const TAKE_PROFIT_BPS = 12_000; // +20% bounce target
 const STOP_LOSS_BPS = 8800; // -12%
