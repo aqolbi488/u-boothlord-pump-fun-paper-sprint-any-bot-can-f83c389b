@@ -44,8 +44,9 @@ const SELL_SLIPPAGE_BPS = 2000;
 
 // ---- entry / exit triggers --------------------------------------------------
 
-const MIN_TRADES_BEFORE_BUY = 3;
-const MOMENTUM_BPS = 800; // price up 8% from creation before buying
+const MIN_TRADES_BEFORE_BUY = 0;
+const MOMENTUM_BPS = 0; // buy early, as soon as the size cap allows: chasing +8%
+                       // momentum bought tops that reverted (dev net PnL -3.81 SOL)
 const CANDIDATE_MAX_AGE_SLOTS = 900; // drop a mint that never confirms
 const TAKE_PROFIT_BPS = 13_500; // +35%, in ten-thousandths of entry price (x1e6 scale below)
 const STOP_LOSS_BPS = 7200; // -28%
