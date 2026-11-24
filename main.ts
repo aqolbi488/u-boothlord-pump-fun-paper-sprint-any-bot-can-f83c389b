@@ -48,9 +48,9 @@ const MIN_TRADES_BEFORE_BUY = 5;
 const MOMENTUM_BPS = 0; // unused in dip mode: see the dip check below
                        // (strong momentum was best so far at -2.78 SOL; testing reversion)
 const CANDIDATE_MAX_AGE_SLOTS = 900; // drop a mint that never confirms
-const TAKE_PROFIT_BPS = 12_500; // +25% bounce target
-const STOP_LOSS_BPS = 8500; // -15%
-const TIME_EXIT_SLOTS = 900;
+const TAKE_PROFIT_BPS = 12_000; // +20% bounce target
+const STOP_LOSS_BPS = 8800; // -12%
+const TIME_EXIT_SLOTS = 1200;
 
 const SCALE = 1_000_000n; // price scaling for integer ratio math
 
@@ -163,10 +163,10 @@ await runBot({
       if (curve.trades < MIN_TRADES_BEFORE_BUY) continue;
       const now = scaledPrice(curve.virtual_quote_reserves, curve.virtual_token_reserves);
       if (now <= 0n || cand.createPrice <= 0n) continue;
-      // Dip buy (reversion): price pulled back 15-40% from creation — a
+      // Dip buy (reversion): price pulled back 15-30% from creation — a
       // dip, not a collapse — with enough trading to have a real price.
       const ratioBps = (now * 10_000n) / cand.createPrice;
-      if (ratioBps > 8500n || ratioBps < 6000n) continue;
+      if (ratioBps > 8500n || ratioBps < 7000n) continue;
       const cap = state.maxBuyLamports(mint);
       if (cap < MIN_BUY_LAMPORTS) continue;
       const amount = cap < STAKE_LAMPORTS ? cap : STAKE_LAMPORTS;
