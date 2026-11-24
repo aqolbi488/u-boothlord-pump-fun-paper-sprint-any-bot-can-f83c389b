@@ -48,9 +48,9 @@ const MIN_TRADES_BEFORE_BUY = 0;
 const MOMENTUM_BPS = 0; // buy early, as soon as the size cap allows: chasing +8%
                        // momentum bought tops that reverted (dev net PnL -3.81 SOL)
 const CANDIDATE_MAX_AGE_SLOTS = 900; // drop a mint that never confirms
-const TAKE_PROFIT_BPS = 13_500; // +35%, in ten-thousandths of entry price (x1e6 scale below)
-const STOP_LOSS_BPS = 7200; // -28%
-const TIME_EXIT_SLOTS = 1200;
+const TAKE_PROFIT_BPS = 15_000; // +50%: let the rare runner pay for the losers
+const STOP_LOSS_BPS = 8800; // -12%: cut losers fast, most new coins only fall
+const TIME_EXIT_SLOTS = 600;
 
 const SCALE = 1_000_000n; // price scaling for integer ratio math
 
