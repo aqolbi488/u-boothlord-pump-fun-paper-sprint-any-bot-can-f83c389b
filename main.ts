@@ -44,13 +44,13 @@ const SELL_SLIPPAGE_BPS = 2000;
 
 // ---- entry / exit triggers --------------------------------------------------
 
-const MIN_TRADES_BEFORE_BUY = 10;
-const MOMENTUM_BPS = 2500; // +25% with >=10 trades: only real runners, not every mint
-                           // (buying everything lost: -4.27 / -3.52 SOL on dev)
+const MIN_TRADES_BEFORE_BUY = 5;
+const MOMENTUM_BPS = 0; // unused in dip mode: see the dip check below
+                       // (strong momentum was best so far at -2.78 SOL; testing reversion)
 const CANDIDATE_MAX_AGE_SLOTS = 900; // drop a mint that never confirms
-const TAKE_PROFIT_BPS = 20_000; // +100%: let the rare runner pay for the losers
-const STOP_LOSS_BPS = 8000; // -20%
-const TIME_EXIT_SLOTS = 1200;
+const TAKE_PROFIT_BPS = 12_500; // +25% bounce target
+const STOP_LOSS_BPS = 8500; // -15%
+const TIME_EXIT_SLOTS = 900;
 
 const SCALE = 1_000_000n; // price scaling for integer ratio math
 
@@ -163,8 +163,10 @@ await runBot({
       if (curve.trades < MIN_TRADES_BEFORE_BUY) continue;
       const now = scaledPrice(curve.virtual_quote_reserves, curve.virtual_token_reserves);
       if (now <= 0n || cand.createPrice <= 0n) continue;
-      // Momentum: price up at least MOMENTUM_BPS over creation price.
-      if ((now * 10_000n) / cand.createPrice < 10_000n + BigInt(MOMENTUM_BPS)) continue;
+      // Dip buy (reversion): price pulled back 15-40% from creation — a
+      // dip, not a collapse — with enough trading to have a real price.
+      const ratioBps = (now * 10_000n) / cand.createPrice;
+      if (ratioBps > 8500n || ratioBps < 6000n) continue;
       const cap = state.maxBuyLamports(mint);
       if (cap < MIN_BUY_LAMPORTS) continue;
       const amount = cap < STAKE_LAMPORTS ? cap : STAKE_LAMPORTS;
